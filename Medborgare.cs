@@ -8,16 +8,20 @@ namespace TjuvochPolis_Grupp_H;
 
 internal class Medborgare : Person
 {
-    public static List<string> medborgarNamn = File.ReadAllLines("medborgarNamn.txt").ToList();
-    private static int medborgarNum = 0;
+    
+    private static List<string> medborgarNamn = File.ReadAllLines($"medborgarNamn.txt").ToList();
+    public static List<Medborgare> medborgarLista = SkapaMedborgare();
 
-    public static Medborgare SkapaMedborgare()
+    private static List<Medborgare> SkapaMedborgare()
     {
-        Medborgare medborgare = new Medborgare();
-        medborgare.Name = medborgarNamn[medborgarNum];
-        medborgarNum++;
+        List<Medborgare> medborgarList = new List<Medborgare>();
 
-        return medborgare;
+        foreach (string name in medborgarNamn)
+        {
+            Medborgare nyMedborgare = new Medborgare();
+            nyMedborgare.Name = name;
+            medborgarList.Add(nyMedborgare);
+        }
+        return medborgarList;
     }
-
 }

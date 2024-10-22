@@ -2,6 +2,7 @@
 {
     internal class Program
     {
+        //Här står det text
         static void Main(string[] args)
         {
             char[,] arr = new char[25,100];
@@ -22,13 +23,14 @@
                 Console.WriteLine();
             }
 
-            List<Medborgare> medborgarList = new List<Medborgare>();
 
-            foreach (string name in Medborgare.medborgarNamn)
+            foreach (Medborgare unikMedborgare in Medborgare.medborgarLista)
             {
-                medborgarList.Add(Medborgare.SkapaMedborgare());
+
+                Console.WriteLine(unikMedborgare.Name);
+
             }
-            foreach (Medborgare medborgare in medborgarList) { Console.WriteLine(medborgare.Name); }
+
         }
     }
 }
