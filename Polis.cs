@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -10,6 +11,9 @@ namespace TjuvochPolis_Grupp_H;
 
 internal class Polis : Person
 {
+
+    
+
     List<string> polisNamn = new List<string>
     {
         "Alexandro Moulton",
@@ -23,4 +27,12 @@ internal class Polis : Person
         "Marguerite Corrigan",
         "Treyvon Knight"
     };
+
+    public Polis(int kordX, int kordY, int[,] kord)
+    {
+        KordX = kordX;
+        KordY = kordY;
+        Kord = kord;
+        Saker = new List<string>();
+    }
 }

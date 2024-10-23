@@ -8,7 +8,21 @@ namespace TjuvochPolis_Grupp_H;
 
 internal class Medborgare : Person
 {
+ 
+
     
+
+    public Medborgare(int kordX, int kordY, int[,] kord)
+    {
+        KordX = kordX;
+        KordY = kordY;
+        Kord = kord;
+        Saker = new List<string>();
+    }
+
+
+
+
     private static List<string> medborgarNamn = File.ReadAllLines($"medborgarNamn.txt").ToList();
     public static List<Medborgare> medborgarLista = SkapaMedborgare();
 
