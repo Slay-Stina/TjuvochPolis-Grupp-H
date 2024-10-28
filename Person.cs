@@ -13,12 +13,13 @@ internal class Person
     public static Random rnd = new Random();
     public string Name { get; set; }
 
-    public int KordX = rnd.Next(1, 100);
+    public int KordX = rnd.Next(1, 99);
 
-    public int KordY = rnd.Next(1, 25);
+    public int KordY = rnd.Next(1, 24);
 
     public char symbol { get; set; }
-    public int[,] Kord { get; set; }
+    public int DirX = rnd.Next(3);
+    public int DirY = rnd.Next(3);
 
     public List<Saker> Inventory = new List<Saker>();
 
