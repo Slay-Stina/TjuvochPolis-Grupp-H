@@ -46,7 +46,24 @@ internal class Program
         {
             if (person.KordY == i && person.KordX == j)
             {
-                Console.Write(person.symbol);
+                if (person.symbol == 'M')
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write(person.symbol);
+                    Console.ForegroundColor= ConsoleColor.White;
+                }
+                if (person.symbol == 'P')
+                {  Console.ForegroundColor = ConsoleColor.Blue; 
+                    Console.Write(person.symbol);
+                    Console.ForegroundColor= ConsoleColor.White;
+                }
+                if (person.symbol == 'T')
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write(person.symbol);
+                    Console.ForegroundColor= ConsoleColor.White;
+                }
+                
             }
         }
     }
