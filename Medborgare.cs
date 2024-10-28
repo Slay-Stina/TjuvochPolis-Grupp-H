@@ -23,7 +23,7 @@ internal class Medborgare : Person
     }
 
 
-    private static List<string> medborgarNamn = File.ReadAllLines(@"medborgarNamn.txt").ToList();
+    private static List<string> medborgarNamn = File.ReadAllLines(@"MedborgarNamn.txt").ToList();
     public static List<Medborgare> medborgarLista = SkapaMedborgare();
 
     private static List<Medborgare> SkapaMedborgare()
