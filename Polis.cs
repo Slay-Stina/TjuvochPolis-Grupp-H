@@ -22,7 +22,7 @@ internal class Polis : Person
 
     }
 
-    private static List<string> polisNamn = File.ReadAllLines(@"PolisNamn.txt").ToList();
+    private static List<string> polisNamn = File.ReadAllLines(@"..\..\..\polisnamn.txt").ToList();
     public static List<Polis> polisLista = SkapaPolis();
 
     private static List<Polis> SkapaPolis()
