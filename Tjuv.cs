@@ -14,7 +14,7 @@ internal class Tjuv : Person
 
 
 
-    private static List<string> tjuvNamn = File.ReadAllLines(@"tjuvnamn.txt").ToList();
+    private static List<string> tjuvNamn = File.ReadAllLines(@"TjuvNamn.txt").ToList();
     public static List<Tjuv> tjuvLista = SkapaTjuv();
 
 
