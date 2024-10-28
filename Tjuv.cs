@@ -11,22 +11,32 @@ internal class Tjuv : Person
 { 
     public bool TjuvStad { get; set; }
 
-    
 
 
 
-    List<string> tjuvNamn = new List<string>
+    private static List<string> tjuvNamn = File.ReadAllLines($"tjuvnamn.txt").ToList();
+    public static List<Tjuv> tjuvLista = SkapaTjuv();
+
+
+    public Tjuv()
     {
-        "P Diddy",
-        ""
-    };
-    public Tjuv(int kordX,int kordY,int[,] kord)
-    {
-        KordX = kordX;
-        KordY = kordY;
-        Kord = kord;
+        symbol = 'T';
+
         TjuvStad = true;
-        Saker = new List<string>();
+
+    }
+
+    private static List<Tjuv> SkapaTjuv() 
+    {
+        List<Tjuv> TjuvList = new List<Tjuv>();
+
+        foreach (string name in tjuvNamn)
+        {
+            Tjuv nyTjuv = new Tjuv();
+            nyTjuv.Name = name;
+            TjuvList.Add(nyTjuv);
+        }
+        return TjuvList;
     }
 }
 

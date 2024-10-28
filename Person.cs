@@ -10,15 +10,17 @@ namespace TjuvochPolis_Grupp_H;
 
 internal class Person
 {
+    public static Random rnd = new Random();
     public string Name { get; set; }
 
-    public int KordX { get; set; }
+    public int KordX = rnd.Next(1, 100);
 
-    public int KordY { get; set; }
+    public int KordY = rnd.Next(1, 25);
 
+    public char symbol { get; set; }
     public int[,] Kord { get; set; }
 
-    public List<string> Saker {  get; set; } 
+    public List<Saker> Inventory = new List<Saker>();
 
 }
 

@@ -1,10 +1,18 @@
-﻿namespace TjuvochPolis_Grupp_H
+﻿using System.ComponentModel.Design;
+
+namespace TjuvochPolis_Grupp_H
 {
     internal class Program
     {
         //Här står det text
         static void Main(string[] args)
         {
+            List<Person> personlista = new List<Person>();
+            personlista.AddRange(Medborgare.medborgarLista);
+            personlista.AddRange(Tjuv.tjuvLista);
+            personlista.AddRange(Polis.polisLista);
+            bool wrotesymbol = false;
+
             char[,] arr = new char[25,100];
 
             for (int i = 0; i < arr.GetLength(0); i++)
@@ -17,18 +25,23 @@
                     }
                     else
                     {
-                        Console.Write(' ');
+                        wrotesymbol = false;
+                        foreach (Person person in personlista) //metod som tar in i och j och skickar tillbaka bool och char om person e po kordinaterna
+                        {
+                            if (person.KordX == j && person.KordY == i)
+                                Console.Write(person.symbol); 
+                            wrotesymbol = true;
+                            
+                        }
+
+                        {
+                            Console.Write(' ');
+                        }
+
                     }
+
                 }
                 Console.WriteLine();
-            }
-
-
-            foreach (Medborgare unikMedborgare in Medborgare.medborgarLista)
-            {
-
-                Console.WriteLine(unikMedborgare.Name);
-
             }
 
         }

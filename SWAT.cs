@@ -6,6 +6,6 @@ using System.Threading.Tasks;
 
 namespace TjuvochPolis_Grupp_H;
 
-internal class SWAT: Polis
-{
-}
+//internal class SWAT: Polis
+//{
+//}

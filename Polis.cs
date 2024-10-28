@@ -5,34 +5,37 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
+
 
 namespace TjuvochPolis_Grupp_H;
 
 internal class Polis : Person
 {
 
-    
 
-    List<string> polisNamn = new List<string>
-    {
-        "Alexandro Moulton",
-        "Skye Dukes",
-        "Jaela Laws",
-        "Alliyah Hutto",
-        "April Shanahan",
-        "Eden Dobbs",
-        "Kahlil Craig",
-        "Carter Adame",
-        "Marguerite Corrigan",
-        "Treyvon Knight"
-    };
 
-    public Polis(int kordX, int kordY, int[,] kord)
+
+
+    public Polis()
     {
-        KordX = kordX;
-        KordY = kordY;
-        Kord = kord;
-        Saker = new List<string>();
+        symbol = 'P';
+
     }
+
+    private static List<string> polisNamn = File.ReadAllLines($"polisnamn.txt").ToList();
+    public static List<Polis> polisLista = SkapaPolis();
+
+    private static List<Polis> SkapaPolis()
+    {
+        List<Polis> PolisList = new List<Polis>();
+
+        foreach (string name in polisNamn)
+        {
+            Polis nyPolis = new Polis();
+            nyPolis.Name = name;
+            PolisList.Add(nyPolis);
+        }
+        return PolisList;
+    }
+
 }
