@@ -8,31 +8,46 @@ namespace TjuvochPolis_Grupp_H
 {
     internal class Saker
     {
-
+        public int value {  get; set; }    
     }
 
     internal class MobilTelefon : Saker
     {
-        //value
+        public MobilTelefon()
+        {
+            value = 7;
+        }
     }
 
     internal class plånbok : Saker
     {
-
+        public plånbok()
+        {
+            value = 5; 
+        }
     }
 
     internal class nycklar : Saker 
     {
-    
+        public nycklar()
+        {
+            value = 4;
+        }
     }
 
     internal class smycken : Saker 
     {
-    
+        public smycken()
+        {
+            value = 8;
+        }
     }
 
     internal class klocka : Saker 
     {
-    
+        public klocka()
+        {
+            value = 6;
+        }
     }
 }

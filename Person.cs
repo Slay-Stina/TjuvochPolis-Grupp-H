@@ -17,6 +17,8 @@ internal class Person
 
     public int KordY = rnd.Next(1, 24);
 
+
+
     public char symbol { get; set; }
     public int DirX = rnd.Next(3);
     public int DirY = rnd.Next(3);

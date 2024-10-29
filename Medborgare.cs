@@ -8,7 +8,8 @@ namespace TjuvochPolis_Grupp_H;
 
 internal class Medborgare : Person
 {
- 
+    
+    
     public Medborgare() 
     {
 
@@ -19,7 +20,9 @@ internal class Medborgare : Person
         Inventory.Add(new nycklar());
         symbol = 'M';
 
+        
 
+        
     }
 
 
@@ -35,6 +38,7 @@ internal class Medborgare : Person
             Medborgare nyMedborgare = new Medborgare();
             nyMedborgare.Name = name;
             medborgarList.Add(nyMedborgare);
+            
         }
         return medborgarList;
     }

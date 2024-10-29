@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.Design;
+﻿using System.Collections.Generic;
+using System.ComponentModel.Design;
+using System.Diagnostics.Contracts;
 
 namespace TjuvochPolis_Grupp_H;
 
@@ -24,6 +26,7 @@ internal class Program
         //}
         while (true)
         {
+            CheckMeetings();
             Console.Clear();
             MovePerson(personlista);
             for (int i = 0; i < arr.GetLength(0); i++)
@@ -47,10 +50,17 @@ internal class Program
                         }
                     }
                 }
-                Console.Write(" " + i);
+                Console.Write(" ");
                 Console.WriteLine();
+
+             
+                
             }
-            Thread.Sleep(1000);
+            foreach (Tjuv tjuv in Tjuv.tjuvLista)
+            { 
+                Console.WriteLine(tjuv.TjuvIStad + " " + tjuv.JailTime); 
+            }
+            Thread.Sleep(1);
             CountToDir++;
             if (CountToDir == ChangeDir)
             {
@@ -140,6 +150,7 @@ internal class Program
     private static bool CheckPos(List<Person> personlista, int i, int j)
     {
         bool isPos = false;
+
         foreach (Person person in personlista)
         {
             if (person.KordY == i && person.KordX == j)
@@ -148,6 +159,50 @@ internal class Program
             }
         }
         return isPos;
+    }
+    public static void CheckMeetings()
+    {
+        Random rnd = new Random();
+        
+
+        foreach (Tjuv tjuv in Tjuv.tjuvLista)
+        {
+            foreach (Medborgare medborgare in Medborgare.medborgarLista)
+            {
+                if (tjuv.KordX == medborgare.KordX && tjuv.KordY == medborgare.KordY && tjuv.TjuvIStad)
+                {
+                    if (medborgare.Inventory.Count > 0)
+                    { 
+                    Saker stolenItem = medborgare.Inventory[rnd.Next(medborgare.Inventory.Count)];
+
+                    medborgare.Inventory.Remove(stolenItem);
+                    tjuv.Inventory.Add(stolenItem);
+                    }
+                }
+                        
+            }
+        }
+
+        foreach (Tjuv tjuv in Tjuv.tjuvLista)
+        {
+            foreach (Polis polis in Polis.polisLista)
+            {
+                if (tjuv.KordX == polis.KordX && tjuv.KordY == polis.KordY && tjuv.TjuvIStad)
+                {
+                    if(tjuv.Inventory.Count > 0)
+                    { 
+                        polis.Inventory.AddRange(tjuv.Inventory);
+                        tjuv.Inventory.ForEach(item => { tjuv.JailTime += item.value * tjuv.NumberOfTheft ;});
+
+                        tjuv.Inventory.Clear();
+                        tjuv.TjuvIStad = false;
+
+                    }
+                }
+
+            }
+        }
+        
     }
 
 }

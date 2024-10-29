@@ -11,7 +11,7 @@ namespace TjuvochPolis_Grupp_H;
 
 internal class Polis : Person
 {
-
+    
 
 
 
@@ -19,7 +19,7 @@ internal class Polis : Person
     public Polis()
     {
         symbol = 'P';
-
+        
     }
 
     private static List<string> polisNamn = File.ReadAllLines(@"..\..\..\polisnamn.txt").ToList();

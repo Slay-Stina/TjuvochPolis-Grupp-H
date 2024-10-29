@@ -9,9 +9,12 @@ namespace TjuvochPolis_Grupp_H;
 
 internal class Tjuv : Person
 { 
-    public bool TjuvStad { get; set; }
+public bool TjuvIStad { get; set; }
 
+public int JailTime = 0;
 
+public int NumberOfTheft = 1;
+  
 
 
     private static List<string> tjuvNamn = File.ReadAllLines(@"..\..\..\TjuvNamn.txt").ToList();
@@ -22,8 +25,8 @@ internal class Tjuv : Person
     {
         symbol = 'T';
 
-        TjuvStad = true;
-
+        TjuvIStad = true;
+        
     }
 
     private static List<Tjuv> SkapaTjuv() 
