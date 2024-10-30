@@ -13,7 +13,7 @@ public bool TjuvIStad { get; set; }
 
 public int JailTime = 0;
 
-public int NumberOfTheft = 1;
+public int NumberOfConvicted = 0;
   
 
 

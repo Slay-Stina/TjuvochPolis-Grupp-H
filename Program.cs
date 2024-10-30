@@ -9,67 +9,124 @@ internal class Program
     public static int ChangeDir = 20;
     public static int CountToDir = 0;
     public static Random Rnd = new Random();
+    public static List<Person> Prison = new List<Person>();
+    public static List<Person> PersonLista = new List<Person>();
+    public static Queue<string> Events = new Queue<string>();
+    public static int Speed = 200;
+
     static void Main(string[] args)
     {
-        List<Person> personlista = new List<Person>();
-        personlista.AddRange(Medborgare.medborgarLista);
-        personlista.AddRange(Tjuv.tjuvLista);
-        personlista.AddRange(Polis.polisLista);
-        //bool wrotesymbol = false;
+        PersonLista.AddRange(Medborgare.medborgarLista);
+        PersonLista.AddRange(Tjuv.tjuvLista);
+        PersonLista.AddRange(Polis.polisLista);
 
-        char[,] arr = new char[25,100];
-        //personlista.Sort((x,y) => x.KordY.CompareTo(y.KordY));
+        char[,] city = new char[25,100];
+        char[,] prison = new char[10,25];
 
-        //foreach (Person p in personlista)
-        //{
-        //    Console.WriteLine(p.KordX + " , " + p.KordY + "\t" + p.Name + "\t" + p.GetType().Name);
-        //}
         while (true)
         {
+            
+            PrisonTime();
             CheckMeetings();
             Console.Clear();
-            MovePerson(personlista);
-            for (int i = 0; i < arr.GetLength(0); i++)
+            MovePerson(PersonLista);
+
+            DrawSquare(city, PersonLista);
+            DrawSquare(prison, Prison);
+
+            
+
+            if (Events.Count > 0)
             {
-                for (int j = 0; j < arr.GetLength(1); j++)
-                {
-                    if (i == 0 || j == 0 || i == arr.GetLength(0) - 1 || j == arr.GetLength(1) - 1)
-                    {
-                        Console.Write('X');
-                    }
-
-                    else
-                    {
-                        if (CheckPos(personlista, i, j))
-                        {
-                            ShowSymbol(personlista, i, j);
-                        }
-                        else
-                        {
-                            Console.Write(' ');
-                        }
-                    }
-                }
-                Console.Write(" ");
-                Console.WriteLine();
-
-             
-                
+                PrintEvent();
             }
-            foreach (Tjuv tjuv in Tjuv.tjuvLista)
+            
+            foreach (Tjuv tjuv in Prison)
             { 
-                Console.WriteLine(tjuv.TjuvIStad + " " + tjuv.JailTime); 
+                Console.WriteLine(tjuv.Name + " " + tjuv.JailTime); 
             }
-            Thread.Sleep(1);
+
+            //PlaySpeed();
+            Thread.Sleep(Speed);
+
             CountToDir++;
             if (CountToDir == ChangeDir)
             {
-                foreach(Person person in personlista)
+                foreach(Person person in PersonLista)
                 {
                     person.DirX = Rnd.Next(3);
                     person.DirY = Rnd.Next(3);
                 }
                 CountToDir = 0;
+            }
+        }
+    }
+
+    private static void DrawSquare(char[,] arr, List<Person> peopleList)
+    {
+        for (int i = 0; i < arr.GetLength(0); i++)
+        {
+            for (int j = 0; j < arr.GetLength(1); j++)
+            {
+                if (i == 0 || j == 0 || i == arr.GetLength(0) - 1 || j == arr.GetLength(1) - 1)
+                {
+                    Console.Write('X');
+                }
+
+                else
+                {
+                    if (CheckPos( peopleList, i, j))
+                    {
+                        ShowSymbol(peopleList, i, j);
+                    }
+                    else
+                    {
+                        Console.Write(' ');
+                    }
+                }
+            }
+            Console.Write(" ");
+            Console.WriteLine();
+        }
+    }
+
+    //private static void PlaySpeed()
+    //{  
+    //    Thread.Sleep(Speed);
+
+    //    ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+    //    if(keyInfo.Key == ConsoleKey.UpArrow)
+    //    {
+    //        Speed += 100;
+    //    }
+    //    if(keyInfo.Key == ConsoleKey.DownArrow && Speed > 0)
+    //    {
+    //        Speed -= 100;
+    //    }
+    //}
+
+    private static void PrintEvent()
+    {
+        foreach (object happens in Events)
+        {
+            Console.WriteLine(happens);
+        }
+        if (Events.Count > 5)
+        {
+            Events.Dequeue();
+        }
+    }
+
+    private static void PrisonTime()
+    {
+        foreach (Tjuv tjuv in Prison)
+        {
+            tjuv.JailTime--;
+            if(tjuv.JailTime == 0 )
+            {
+                PersonLista.Add(tjuv);
+                Prison.Remove(tjuv);
+                return;
             }
         }
     }
@@ -160,49 +217,54 @@ internal class Program
         }
         return isPos;
     }
+
     public static void CheckMeetings()
     {
         Random rnd = new Random();
         
-
-        foreach (Tjuv tjuv in Tjuv.tjuvLista)
+        foreach (Person person1 in PersonLista)
         {
-            foreach (Medborgare medborgare in Medborgare.medborgarLista)
+            foreach (Person person2 in PersonLista)
             {
-                if (tjuv.KordX == medborgare.KordX && tjuv.KordY == medborgare.KordY && tjuv.TjuvIStad)
+                if (person1 is Tjuv && person2 is Medborgare && person1.KordX == person2.KordX && person1.KordY == person2.KordY)
                 {
-                    if (medborgare.Inventory.Count > 0)
-                    { 
-                    Saker stolenItem = medborgare.Inventory[rnd.Next(medborgare.Inventory.Count)];
+                    Tjuv tjuv = (Tjuv)person1;
+                    Medborgare medborgare = (Medborgare)person2;
 
-                    medborgare.Inventory.Remove(stolenItem);
-                    tjuv.Inventory.Add(stolenItem);
+                    if (medborgare.Inventory.Count > 0)
+                    {
+                        Saker stolenItem = medborgare.Inventory[rnd.Next(medborgare.Inventory.Count)];
+
+                        Events.Enqueue($"{tjuv.Name} stal {stolenItem.GetType().Name} från {medborgare.Name}");
+
+                        medborgare.Inventory.Remove(stolenItem);
+                        tjuv.Inventory.Add(stolenItem);
                     }
                 }
-                        
-            }
-        }
 
-        foreach (Tjuv tjuv in Tjuv.tjuvLista)
-        {
-            foreach (Polis polis in Polis.polisLista)
-            {
-                if (tjuv.KordX == polis.KordX && tjuv.KordY == polis.KordY && tjuv.TjuvIStad)
+                if (person1 is Tjuv && person2 is Polis && person1.KordX == person2.KordX && person1.KordY == person2.KordY)
                 {
-                    if(tjuv.Inventory.Count > 0)
-                    { 
+                    Tjuv tjuv = (Tjuv)person1;
+                    Polis polis = (Polis)person2;
+
+                    if (tjuv.Inventory.Count > 0)
+                    {
+                        tjuv.NumberOfConvicted++;
                         polis.Inventory.AddRange(tjuv.Inventory);
-                        tjuv.Inventory.ForEach(item => { tjuv.JailTime += item.value * tjuv.NumberOfTheft ;});
+                        tjuv.Inventory.ForEach(item => { tjuv.JailTime += item.value * tjuv.NumberOfConvicted; });
+
+                        Events.Enqueue($"{tjuv.Name} arresterades av {polis.Name}");
 
                         tjuv.Inventory.Clear();
-                        tjuv.TjuvIStad = false;
-
+                        Prison.Add(tjuv);
+                        PersonLista.Remove(tjuv);
+                        tjuv.KordX = Random.Shared.Next(1, 24);
+                        tjuv.KordY = Random.Shared.Next(1, 9);
+                        return;
                     }
                 }
-
             }
         }
-        
     }
 
 }

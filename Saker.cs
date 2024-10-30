@@ -8,7 +8,9 @@ namespace TjuvochPolis_Grupp_H
 {
     internal class Saker
     {
-        public int value {  get; set; }    
+        public string Owner { get; set; }
+        public int value {  get; set; }
+
     }
 
     internal class MobilTelefon : Saker
