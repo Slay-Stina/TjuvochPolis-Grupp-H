@@ -23,7 +23,7 @@ public int NumberOfConvicted = 0;
 
     public Tjuv()
     {
-        symbol = 'T';
+        symbol = "T";
 
         TjuvIStad = true;
         

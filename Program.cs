@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Diagnostics.Contracts;
+using System;
 
 namespace TjuvochPolis_Grupp_H;
 
@@ -12,7 +13,24 @@ internal class Program
     public static List<Person> Prison = new List<Person>();
     public static List<Person> PersonLista = new List<Person>();
     public static Queue<string> Events = new Queue<string>();
-    public static int Speed = 200;
+    public static int Speed = 500;
+
+    protected static int origRow;
+    protected static int origCol;
+
+    protected static void WriteAt(string s, int x, int y)
+    {
+        try
+        {
+            Console.SetCursorPosition(origCol + x, origRow + y);
+            Console.Write(s);
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            Console.Clear();
+            Console.WriteLine(e.Message);
+        }
+    }
 
     static void Main(string[] args)
     {
@@ -25,34 +43,38 @@ internal class Program
 
         while (true)
         {
-            
+            Console.Clear();
+            origRow = Console.CursorTop;
+            origCol = Console.CursorLeft;
+
             PrisonTime();
             CheckMeetings();
-            Console.Clear();
-            MovePerson(PersonLista);
+            MovePerson();
 
-            DrawSquare(city, PersonLista);
-            DrawSquare(prison, Prison);
-
+            DrawCity(city);
+            DrawPrison(prison);
             
 
             if (Events.Count > 0)
             {
                 PrintEvent();
             }
-            
-            foreach (Tjuv tjuv in Prison)
-            { 
-                Console.WriteLine(tjuv.Name + " " + tjuv.JailTime); 
-            }
 
-            //PlaySpeed();
+            if(Console.KeyAvailable)
+            {
+                PlaySpeed();
+            }
+            WriteAt($"Speed - {Speed}", 101, 7);
+            if (Speed == 0)
+            {
+                Speed = 1;
+            }
             Thread.Sleep(Speed);
 
             CountToDir++;
             if (CountToDir == ChangeDir)
             {
-                foreach(Person person in PersonLista)
+                foreach (Person person in PersonLista)
                 {
                     person.DirX = Rnd.Next(3);
                     person.DirY = Rnd.Next(3);
@@ -62,54 +84,77 @@ internal class Program
         }
     }
 
-    private static void DrawSquare(char[,] arr, List<Person> peopleList)
+    private static void DrawPrison(char[,] prison)
     {
-        for (int i = 0; i < arr.GetLength(0); i++)
+        WriteAt("FÄNGELSE", 109, 14);
+        for (int i = 15; i < prison.GetLength(0) + 15; i++)
         {
-            for (int j = 0; j < arr.GetLength(1); j++)
+            for (int j = 101; j < prison.GetLength(1) + 101; j++)
             {
-                if (i == 0 || j == 0 || i == arr.GetLength(0) - 1 || j == arr.GetLength(1) - 1)
+                if (i == 15 || j == 101 || i == prison.GetLength(0) + 14 || j == prison.GetLength(1) + 100)
                 {
-                    Console.Write('X');
-                }
-
-                else
-                {
-                    if (CheckPos( peopleList, i, j))
-                    {
-                        ShowSymbol(peopleList, i, j);
-                    }
-                    else
-                    {
-                        Console.Write(' ');
-                    }
+                    WriteAt("X", j, i);
                 }
             }
-            Console.Write(" ");
-            Console.WriteLine();
+        }
+        PrisonList();
+    }
+
+    private static void PrisonList()
+    {
+        int i = 16;
+        foreach (Tjuv tjuv in Prison)
+        {
+            WriteAt($"{tjuv.Name} - {tjuv.JailTime}", 102, i);
+            i++;
         }
     }
 
-    //private static void PlaySpeed()
-    //{  
-    //    Thread.Sleep(Speed);
+    private static void DrawCity(char[,] city)
+    {
+        for (int i = 0; i < city.GetLength(0); i++)
+        {
+            for (int j = 0; j < city.GetLength(1); j++)
+            {
+                if (i == 0 || j == 0 || i == city.GetLength(0) - 1 || j == city.GetLength(1) - 1)
+                {
+                    WriteAt("X", j, i);
+                }
+                else
+                {
+                    ShowSymbol(i, j);
+                }
+            }
+        }
+    }
 
-    //    ConsoleKeyInfo keyInfo = Console.ReadKey(true);
-    //    if(keyInfo.Key == ConsoleKey.UpArrow)
-    //    {
-    //        Speed += 100;
-    //    }
-    //    if(keyInfo.Key == ConsoleKey.DownArrow && Speed > 0)
-    //    {
-    //        Speed -= 100;
-    //    }
-    //}
+    private static void PlaySpeed()
+    {
+        ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+        if (keyInfo.Key == ConsoleKey.UpArrow)
+        {
+            if(Speed == 1)
+            { 
+                Speed = 100; 
+            }
+            else
+            { 
+                Speed += 100; 
+            }
+        }
+        if (keyInfo.Key == ConsoleKey.DownArrow && Speed > 0 && !(Speed == 1))
+        {
+            Speed -= 100;
+        }
+    }
 
     private static void PrintEvent()
     {
-        foreach (object happens in Events)
+        int i = 0;
+        foreach (string happens in Events)
         {
-            Console.WriteLine(happens);
+            WriteAt(happens,101,i);
+            i++;
         }
         if (Events.Count > 5)
         {
@@ -131,9 +176,9 @@ internal class Program
         }
     }
 
-    private static void MovePerson(List<Person> personlista)
+    private static void MovePerson()
     {
-        foreach (Person person in personlista)
+        foreach (Person person in PersonLista)
         {
             switch (person.DirX)
             {
@@ -157,11 +202,11 @@ internal class Program
                     person.KordY--;
                     break;
             }
-            if (person.KordX == 0)
+            if (person.KordX <= 0)
             {
                 person.KordX = 98;
             }
-            if (person.KordY <= 1) 
+            if (person.KordY <= 0) 
             { 
                 person.KordY = 23; 
             }
@@ -169,53 +214,39 @@ internal class Program
             {
                 person.KordX = 1;
             }
-            if(person.KordY >= 24)
+            if (person.KordY >= 24)
             {
                 person.KordY = 1;
             }
         }
     }
 
-    private static void ShowSymbol(List<Person> personlista, int i, int j)
+    private static void ShowSymbol(int i, int j)
     {
-        foreach (Person person in personlista)
+        foreach (Person person in PersonLista)
         {
             if (person.KordY == i && person.KordX == j)
             {
-                if (person.symbol == 'M')
+                if (person.symbol == "M")
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write(person.symbol);
+                    WriteAt(person.symbol, j, i);
                     Console.ForegroundColor= ConsoleColor.White;
                 }
-                if (person.symbol == 'P')
-                {  Console.ForegroundColor = ConsoleColor.Blue; 
-                    Console.Write(person.symbol);
+                if (person.symbol == "P")
+                {  Console.ForegroundColor = ConsoleColor.Blue;
+                    WriteAt(person.symbol, j, i);
                     Console.ForegroundColor= ConsoleColor.White;
                 }
-                if (person.symbol == 'T')
+                if (person.symbol == "T")
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.Write(person.symbol);
+                    WriteAt(person.symbol, j, i);
                     Console.ForegroundColor= ConsoleColor.White;
                 }
                 
             }
         }
-    }
-
-    private static bool CheckPos(List<Person> personlista, int i, int j)
-    {
-        bool isPos = false;
-
-        foreach (Person person in personlista)
-        {
-            if (person.KordY == i && person.KordX == j)
-            {
-                isPos = true;
-            }
-        }
-        return isPos;
     }
 
     public static void CheckMeetings()
