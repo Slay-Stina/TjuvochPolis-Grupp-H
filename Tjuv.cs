@@ -9,18 +9,18 @@ namespace TjuvochPolis_Grupp_H;
 
 internal class Tjuv : Person
 { 
-public bool TjuvIStad { get; set; }
+    public bool TjuvIStad { get; set; }
 
-public int JailTime = 0;
+    public int JailTime = 0;
 
-public int NumberOfConvicted = 0;
-public int Score {  get; set; }
+    public int NumberOfConvicted = 0;
+    public int Score {  get; set; }
+    public int HighScore { get; set; }
   
 
 
     private static List<string> tjuvNamn = File.ReadAllLines(@"..\..\..\TjuvNamn.txt").ToList();
     public static List<Tjuv> tjuvLista = SkapaTjuv();
-
 
     public Tjuv()
     {
@@ -29,8 +29,7 @@ public int Score {  get; set; }
         TjuvIStad = true;
         
     }
-
-    private static List<Tjuv> SkapaTjuv() 
+private static List<Tjuv> SkapaTjuv() 
     {
         List<Tjuv> TjuvList = new List<Tjuv>();
 
@@ -43,5 +42,4 @@ public int Score {  get; set; }
         return TjuvList;
     }
 }
-
 

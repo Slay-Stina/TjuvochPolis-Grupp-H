@@ -2,6 +2,7 @@
 using System.ComponentModel.Design;
 using System.Diagnostics.Contracts;
 using System;
+using System.Drawing;
 
 namespace TjuvochPolis_Grupp_H;
 
@@ -13,8 +14,9 @@ internal class Program
     public static List<Person> Prison = new List<Person>();
     public static List<Person> PersonLista = new List<Person>();
     public static Queue<string> Events = new Queue<string>();
-    public static List<string> HighScore = new List<string>();
+    public static SortedList<string,int> HighScore = new SortedList<string,int>();
     public static int Speed = 500;
+    public static bool RaveMode = false;
 
     protected static int origRow;
     protected static int origCol;
@@ -47,6 +49,10 @@ internal class Program
 
         while (true)
         {
+            //if (RaveMode)
+            //{
+            //    Rave();
+            //}
             Console.Clear();
             origRow = Console.CursorTop;
             origCol = Console.CursorLeft;
@@ -91,15 +97,43 @@ internal class Program
         }
     }
 
+    private static void Rave()
+    {
+        while (RaveMode)
+        {
+            ConsoleColor[] colors = (ConsoleColor[])ConsoleColor.GetValues(typeof(ConsoleColor));
+            foreach (ConsoleColor color in colors)
+            {
+                if (!(color == ConsoleColor.White) && !(color == ConsoleColor.Black))
+                {
+                    Console.BackgroundColor = color;
+                    Thread.Sleep(100);
+                    Console.Clear();
+                }
+            }
+        }
+        Console.BackgroundColor = ConsoleColor.Black;
+        Console.Clear();
+    }
+
     private static void PrintHighscore()
     {
-        HighScore.Sort();
-        int i = 26;
-        foreach(string score in HighScore)
+        var sortedHighscore = HighScore.OrderBy(KeyValuePair =>  KeyValuePair.Value).ToList();
+        sortedHighscore.Reverse();
+        int i = 27;
+        int color = 1;
+        Console.ForegroundColor = ConsoleColor.DarkYellow;
+        WriteAt("#HIGHSCORE#", 3, 26);
+        Console.ForegroundColor = ConsoleColor.White;
+        
+        foreach(var score in sortedHighscore)
         {
-            WriteAt(score,0,i);
+            Console.ForegroundColor = (ConsoleColor)color;
+            WriteAt($"{score.Key} - {score.Value}",0,i);
             i++;
+            color++;
         }
+        Console.ForegroundColor = ConsoleColor.White;
     }
 
     private static void ReturnTime()
@@ -193,6 +227,25 @@ internal class Program
         if (keyInfo.Key == ConsoleKey.DownArrow && Speed > 0 && !(Speed == 1))
         {
             Speed -= 100;
+        }
+        /* ############# RAVE ############## */
+        Thread raveThread = null;  // Declare raveThread outside the if statement
+
+        if (keyInfo.Key == ConsoleKey.Spacebar)
+        {
+            if (RaveMode == false)
+            {
+                RaveMode = true;
+                if (raveThread == null || !raveThread.IsAlive)  // Check if raveThread is already running
+                {
+                    raveThread = new Thread(new ThreadStart(Rave));
+                    raveThread.Start();
+                }
+            }
+            else
+            {
+                RaveMode = false;
+            }
         }
     }
 
@@ -353,7 +406,8 @@ internal class Program
                             tjuv.JailTime += item.Value.Value * tjuv.NumberOfConvicted;
                             tjuv.Score += item.Value.Value;
                         }
-                        HighScore.Add($"{tjuv.Score} - {tjuv.Name}");
+                        AddHighscore(tjuv);
+                        
                         tjuv.Score = 0;
 
                         Events.Enqueue($"{tjuv.Name} arresterades av {polis.Name}");
@@ -370,4 +424,19 @@ internal class Program
         }
     }
 
+    private static void AddHighscore(Tjuv tjuv)
+    {
+        if (!HighScore.ContainsKey(tjuv.Name))
+        {
+            HighScore.Add(tjuv.Name, tjuv.Score);
+        }
+        if (HighScore[tjuv.Name] < tjuv.Score)
+        {
+            HighScore[tjuv.Name] = tjuv.Score;
+        }
+        else
+        {
+            return;
+        }
+    }
 }
