@@ -10,11 +10,6 @@ internal class Medborgare : Person
 {
     public Medborgare()
     {
-        Inventory.Add(new MobilTelefon());
-        Inventory.Add(new plånbok());
-        Inventory.Add(new smycken());
-        Inventory.Add(new klocka());
-        Inventory.Add(new nycklar());
         symbol = "M";
     }
 
@@ -29,8 +24,13 @@ internal class Medborgare : Person
         {
             Medborgare nyMedborgare = new Medborgare();
             nyMedborgare.Name = name;
+            nyMedborgare.Inventory.Add($"{name}1", new MobilTelefon());
+            nyMedborgare.Inventory.Add($"{name}2", new plånbok());
+            nyMedborgare.Inventory.Add($"{name}3", new smycken());
+            nyMedborgare.Inventory.Add($"{name}4", new klocka());
+            nyMedborgare.Inventory.Add($"{name}5", new nycklar());
+
             medborgarList.Add(nyMedborgare);
-            
         }
         return medborgarList;
     }

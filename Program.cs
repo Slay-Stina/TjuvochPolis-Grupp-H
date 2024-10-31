@@ -13,6 +13,7 @@ internal class Program
     public static List<Person> Prison = new List<Person>();
     public static List<Person> PersonLista = new List<Person>();
     public static Queue<string> Events = new Queue<string>();
+    public static List<string> HighScore = new List<string>();
     public static int Speed = 500;
 
     protected static int origRow;
@@ -51,12 +52,14 @@ internal class Program
             origCol = Console.CursorLeft;
 
             PrisonTime();
+            ReturnTime();
             CheckMeetings();
             MovePerson();
 
             DrawCity(city);
             DrawPrison(prison);
-            
+
+            PrintHighscore();
 
             if (Events.Count > 0)
             {
@@ -67,8 +70,8 @@ internal class Program
             {
                 PlaySpeed();
             }
-            WriteAt("↑↓ Använd piltangenterna för att ändra hastighet", 101, 7);
-            WriteAt($"Speed - {Speed}", 101, 8);
+            WriteAt("↑↓ Använd piltangenterna för att ändra hastighet", 101, 11);
+            WriteAt($"Speed - {Speed}", 101, 12);
             if (Speed == 0)
             {
                 Speed = 1;
@@ -84,6 +87,45 @@ internal class Program
                     person.DirY = Rnd.Next(3);
                 }
                 CountToDir = 0;
+            }
+        }
+    }
+
+    private static void PrintHighscore()
+    {
+        HighScore.Sort();
+        int i = 26;
+        foreach(string score in HighScore)
+        {
+            WriteAt(score,0,i);
+            i++;
+        }
+    }
+
+    private static void ReturnTime()
+    {
+        foreach(Person polis in PersonLista)
+        {
+            if(polis is Polis && polis.Inventory.Count > 0)
+            {
+                foreach(KeyValuePair<string,Saker> sak in polis.Inventory)
+                {
+                    sak.Value.ReturnTime--;
+                    if(sak.Value.ReturnTime == 0)
+                    {
+                        foreach(Person medborgare in PersonLista)
+                        {
+                            if (sak.Key.Contains(medborgare.Name))
+                            {
+                                medborgare.Inventory.Add(sak.Key,sak.Value);
+                                sak.Value.ReturnTime = sak.Value.Value;
+                                Events.Enqueue($"{medborgare.Name} fick tillbaka {sak.Value.Name} från {polis.Name}");
+                                polis.Inventory.Remove(sak.Key);
+                                return;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -109,7 +151,9 @@ internal class Program
         int i = 16;
         foreach (Tjuv tjuv in Prison)
         {
-            WriteAt($"{tjuv.Name} - {tjuv.JailTime}", 102, i);
+            Console.ForegroundColor = ConsoleColor.Red;
+            WriteAt($"{tjuv.Name} - {tjuv.JailTime}", 103, i);
+            Console.ForegroundColor = ConsoleColor.White;
             i++;
         }
     }
@@ -157,10 +201,27 @@ internal class Program
         int i = 0;
         foreach (string happens in Events)
         {
-            WriteAt(happens,101,i);
+            if(happens.Contains("stal"))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                WriteAt(happens, 101, i);
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+            if(happens.Contains("arresterades"))
+            {
+                Console.ForegroundColor = ConsoleColor.Blue;
+                WriteAt(happens, 101, i);
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+            if(happens.Contains("tillbaka"))
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                WriteAt(happens, 101, i);
+                Console.ForegroundColor = ConsoleColor.White;
+            }
             i++;
         }
-        if (Events.Count > 5)
+        if (Events.Count > 10)
         {
             Events.Dequeue();
         }
@@ -268,12 +329,13 @@ internal class Program
 
                     if (medborgare.Inventory.Count > 0)
                     {
-                        Saker stolenItem = medborgare.Inventory[rnd.Next(medborgare.Inventory.Count)];
+                        int randomIndex = rnd.Next(medborgare.Inventory.Count);
+                        KeyValuePair<string,Saker> randomItem = medborgare.Inventory.ElementAt(randomIndex);
 
-                        Events.Enqueue($"{tjuv.Name} stal {stolenItem.GetType().Name} från {medborgare.Name}");
+                        Events.Enqueue($"{tjuv.Name} stal {randomItem.Value.Name} från {medborgare.Name}");
 
-                        medborgare.Inventory.Remove(stolenItem);
-                        tjuv.Inventory.Add(stolenItem);
+                        medborgare.Inventory.Remove(randomItem.Key);
+                        tjuv.Inventory.Add(randomItem.Key,randomItem.Value);
                     }
                 }
 
@@ -285,8 +347,14 @@ internal class Program
                     if (tjuv.Inventory.Count > 0)
                     {
                         tjuv.NumberOfConvicted++;
-                        polis.Inventory.AddRange(tjuv.Inventory);
-                        tjuv.Inventory.ForEach(item => { tjuv.JailTime += item.value * tjuv.NumberOfConvicted; });
+                        foreach (KeyValuePair<string, Saker> item in tjuv.Inventory)
+                        {
+                            polis.Inventory.Add(item.Key, item.Value);
+                            tjuv.JailTime += item.Value.Value * tjuv.NumberOfConvicted;
+                            tjuv.Score += item.Value.Value;
+                        }
+                        HighScore.Add($"{tjuv.Score} - {tjuv.Name}");
+                        tjuv.Score = 0;
 
                         Events.Enqueue($"{tjuv.Name} arresterades av {polis.Name}");
 
