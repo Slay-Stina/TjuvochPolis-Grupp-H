@@ -34,6 +34,9 @@ internal class Program
 
     static void Main(string[] args)
     {
+        Console.SetWindowSize(150,40);
+        Console.SetBufferSize(150,40);
+
         PersonLista.AddRange(Medborgare.medborgarLista);
         PersonLista.AddRange(Tjuv.tjuvLista);
         PersonLista.AddRange(Polis.polisLista);
@@ -64,7 +67,8 @@ internal class Program
             {
                 PlaySpeed();
             }
-            WriteAt($"Speed - {Speed}", 101, 7);
+            WriteAt("↑↓ Använd piltangenterna för att ändra hastighet", 101, 7);
+            WriteAt($"Speed - {Speed}", 101, 8);
             if (Speed == 0)
             {
                 Speed = 1;
