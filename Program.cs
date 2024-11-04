@@ -49,20 +49,16 @@ internal class Program
 
         while (true)
         {
-            //if (RaveMode)
-            //{
-            //    Rave();
-            //}
             Console.Clear();
             origRow = Console.CursorTop;
             origCol = Console.CursorLeft;
 
             PrisonTime();
             ReturnTime();
+            
+            DrawCity(city);
             CheckMeetings();
             MovePerson();
-
-            DrawCity(city);
             DrawPrison(prison);
 
             PrintHighscore();
@@ -352,7 +348,8 @@ internal class Program
                     Console.ForegroundColor= ConsoleColor.White;
                 }
                 if (person.symbol == "P")
-                {  Console.ForegroundColor = ConsoleColor.Blue;
+                {  
+                    Console.ForegroundColor = ConsoleColor.Blue;
                     WriteAt(person.symbol, j, i);
                     Console.ForegroundColor= ConsoleColor.White;
                 }
@@ -377,6 +374,7 @@ internal class Program
             {
                 if (person1 is Tjuv && person2 is Medborgare && person1.KordX == person2.KordX && person1.KordY == person2.KordY)
                 {
+                    EventMarker(person1);
                     Tjuv tjuv = (Tjuv)person1;
                     Medborgare medborgare = (Medborgare)person2;
 
@@ -399,6 +397,7 @@ internal class Program
 
                     if (tjuv.Inventory.Count > 0)
                     {
+                        EventMarker(person1);
                         tjuv.NumberOfConvicted++;
                         foreach (KeyValuePair<string, Saker> item in tjuv.Inventory)
                         {
@@ -422,6 +421,13 @@ internal class Program
                 }
             }
         }
+    }
+
+    private static void EventMarker(Person person1)
+    {
+        Console.BackgroundColor = ConsoleColor.White;
+        WriteAt(" ", person1.KordX,person1.KordY);
+        Console.BackgroundColor = ConsoleColor.Black;
     }
 
     private static void AddHighscore(Tjuv tjuv)
