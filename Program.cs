@@ -103,7 +103,7 @@ internal class Program
                 if (!(color == ConsoleColor.White) && !(color == ConsoleColor.Black))
                 {
                     Console.BackgroundColor = color;
-                    Thread.Sleep(100);
+                    Thread.Sleep(500);
                     Console.Clear();
                 }
             }
