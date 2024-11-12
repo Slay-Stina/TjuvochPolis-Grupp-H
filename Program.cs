@@ -233,6 +233,15 @@ internal class Program
         {
             if (RaveMode == false)
             {
+                Console.Clear();
+                WriteAt("PHOTOSENSITIVITY WARNING", 50, 19);
+                WriteAt("This feature may potentially trigger seizures", 50, 20);
+                WriteAt("for people with photosensitive epilepsy.", 50, 21);
+                WriteAt("User Discretion is advised.", 50, 23);
+                WriteAt("Press enter to continue.", 50, 26);
+                Console.ReadLine();
+                Console.Clear();
+
                 RaveMode = true;
                 if (raveThread == null || !raveThread.IsAlive)  // Check if raveThread is already running
                 {
