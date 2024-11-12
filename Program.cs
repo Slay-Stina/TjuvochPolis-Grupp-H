@@ -427,9 +427,7 @@ internal class Program
 
     private static void EventMarker(Person person1)
     {
-        Console.BackgroundColor = ConsoleColor.White;
-        WriteAt(" ", person1.KordX,person1.KordY);
-        Console.BackgroundColor = ConsoleColor.Black;
+        WriteAt("💀", person1.KordX,person1.KordY);
     }
 
     private static void AddHighscore(Tjuv tjuv)
