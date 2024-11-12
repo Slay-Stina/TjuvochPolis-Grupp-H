@@ -3,6 +3,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics.Contracts;
 using System;
 using System.Drawing;
+using System.Text;
 
 namespace TjuvochPolis_Grupp_H;
 
@@ -37,6 +38,7 @@ internal class Program
 
     static void Main(string[] args)
     {
+        Console.OutputEncoding = Encoding.UTF8;
         Console.SetWindowSize(150,40);
         Console.SetBufferSize(150,40);
 
