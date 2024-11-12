@@ -25,10 +25,10 @@ internal class Medborgare : Person
             Medborgare nyMedborgare = new Medborgare();
             nyMedborgare.Name = name;
             nyMedborgare.Inventory.Add($"{name}1", new MobilTelefon());
-            nyMedborgare.Inventory.Add($"{name}2", new plånbok());
-            nyMedborgare.Inventory.Add($"{name}3", new smycken());
-            nyMedborgare.Inventory.Add($"{name}4", new klocka());
-            nyMedborgare.Inventory.Add($"{name}5", new nycklar());
+            nyMedborgare.Inventory.Add($"{name}2", new Plånbok());
+            nyMedborgare.Inventory.Add($"{name}3", new Smycken());
+            nyMedborgare.Inventory.Add($"{name}4", new Klocka());
+            nyMedborgare.Inventory.Add($"{name}5", new Babyoil());
 
             medborgarList.Add(nyMedborgare);
         }

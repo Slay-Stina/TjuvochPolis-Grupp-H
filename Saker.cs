@@ -24,9 +24,9 @@ namespace TjuvochPolis_Grupp_H
         }
     }
 
-    internal class plånbok : Saker
+    internal class Plånbok : Saker
     {
-        public plånbok() : base()
+        public Plånbok() : base()
         {
             Name = "plånbok";
             Value = 5;
@@ -34,19 +34,19 @@ namespace TjuvochPolis_Grupp_H
         }
     }
 
-    internal class nycklar : Saker 
+    internal class Babyoil : Saker 
     {
-        public nycklar() : base()
+        public Babyoil() : base()
         {
-            Name = "nycklar";
+            Name = "babyolja";
             Value = 4;
             ReturnTime = Value;
         }
     }
 
-    internal class smycken : Saker 
+    internal class Smycken : Saker 
     {
-        public smycken() : base()
+        public Smycken() : base()
         {
             Name = "smycken";
             Value = 8;
@@ -54,9 +54,9 @@ namespace TjuvochPolis_Grupp_H
         }
     }
 
-    internal class klocka : Saker 
+    internal class Klocka : Saker 
     {
-        public klocka() : base()
+        public Klocka() : base()
         {
             Name = "klocka";
             Value = 6;
