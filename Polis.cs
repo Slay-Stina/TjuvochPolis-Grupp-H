@@ -11,9 +11,14 @@ namespace TjuvochPolis_Grupp_H;
 
 internal class Polis : Person
 {
+    
+
+
+
+
     public Polis()
     {
-        symbol = "P";
+        symbol = 'P';
         
     }
 

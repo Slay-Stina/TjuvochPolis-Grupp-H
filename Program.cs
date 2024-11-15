@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Diagnostics.Contracts;
-using System;
-using System.Drawing;
-using System.Text;
 
 namespace TjuvochPolis_Grupp_H;
 
@@ -15,33 +12,10 @@ internal class Program
     public static List<Person> Prison = new List<Person>();
     public static List<Person> PersonLista = new List<Person>();
     public static Queue<string> Events = new Queue<string>();
-    public static SortedList<string,int> HighScore = new SortedList<string,int>();
-    public static int Speed = 500;
-    public static bool RaveMode = false;
-
-    protected static int origRow;
-    protected static int origCol;
-
-    protected static void WriteAt(string s, int x, int y)
-    {
-        try
-        {
-            Console.SetCursorPosition(origCol + x, origRow + y);
-            Console.Write(s);
-        }
-        catch (ArgumentOutOfRangeException e)
-        {
-            Console.Clear();
-            Console.WriteLine(e.Message);
-        }
-    }
+    public static int Speed = 200;
 
     static void Main(string[] args)
     {
-        Console.OutputEncoding = Encoding.UTF8;
-        Console.SetWindowSize(150,40);
-        Console.SetBufferSize(150,40);
-
         PersonLista.AddRange(Medborgare.medborgarLista);
         PersonLista.AddRange(Tjuv.tjuvLista);
         PersonLista.AddRange(Polis.polisLista);
@@ -51,41 +25,34 @@ internal class Program
 
         while (true)
         {
-            Console.Clear();
-            origRow = Console.CursorTop;
-            origCol = Console.CursorLeft;
-
-            PrisonTime();
-            ReturnTime();
             
-            DrawCity(city);
+            PrisonTime();
             CheckMeetings();
-            MovePerson();
-            DrawPrison(prison);
+            Console.Clear();
+            MovePerson(PersonLista);
 
-            PrintHighscore();
+            DrawSquare(city, PersonLista);
+            DrawSquare(prison, Prison);
+
+            
 
             if (Events.Count > 0)
             {
                 PrintEvent();
             }
+            
+            foreach (Tjuv tjuv in Prison)
+            { 
+                Console.WriteLine(tjuv.Name + " " + tjuv.JailTime); 
+            }
 
-            if(Console.KeyAvailable)
-            {
-                PlaySpeed();
-            }
-            WriteAt("↑↓ Använd piltangenterna för att ändra hastighet", 101, 11);
-            WriteAt($"Speed - {Speed}", 101, 12);
-            if (Speed == 0)
-            {
-                Speed = 1;
-            }
+            //PlaySpeed();
             Thread.Sleep(Speed);
 
             CountToDir++;
             if (CountToDir == ChangeDir)
             {
-                foreach (Person person in PersonLista)
+                foreach(Person person in PersonLista)
                 {
                     person.DirX = Rnd.Next(3);
                     person.DirY = Rnd.Next(3);
@@ -95,193 +62,56 @@ internal class Program
         }
     }
 
-    private static void Rave()
+    private static void DrawSquare(char[,] arr, List<Person> peopleList)
     {
-        while (RaveMode)
+        for (int i = 0; i < arr.GetLength(0); i++)
         {
-            ConsoleColor[] colors = (ConsoleColor[])ConsoleColor.GetValues(typeof(ConsoleColor));
-            foreach (ConsoleColor color in colors)
+            for (int j = 0; j < arr.GetLength(1); j++)
             {
-                if (!(color == ConsoleColor.White) && !(color == ConsoleColor.Black))
+                if (i == 0 || j == 0 || i == arr.GetLength(0) - 1 || j == arr.GetLength(1) - 1)
                 {
-                    Console.BackgroundColor = color;
-                    Thread.Sleep(500);
-                    Console.Clear();
+                    Console.Write('X');
                 }
-            }
-        }
-        Console.BackgroundColor = ConsoleColor.Black;
-        Console.Clear();
-    }
 
-    private static void PrintHighscore()
-    {
-        var sortedHighscore = HighScore.OrderBy(KeyValuePair =>  KeyValuePair.Value).ToList();
-        sortedHighscore.Reverse();
-        int i = 27;
-        int color = 1;
-        Console.ForegroundColor = ConsoleColor.DarkYellow;
-        WriteAt("#HIGHSCORE#", 3, 26);
-        Console.ForegroundColor = ConsoleColor.White;
-        
-        foreach(var score in sortedHighscore)
-        {
-            Console.ForegroundColor = (ConsoleColor)color;
-            WriteAt($"{score.Key} - {score.Value}",0,i);
-            i++;
-            color++;
-        }
-        Console.ForegroundColor = ConsoleColor.White;
-    }
-
-    private static void ReturnTime()
-    {
-        foreach(Person polis in PersonLista)
-        {
-            if(polis is Polis && polis.Inventory.Count > 0)
-            {
-                foreach(KeyValuePair<string,Saker> sak in polis.Inventory)
+                else
                 {
-                    sak.Value.ReturnTime--;
-                    if(sak.Value.ReturnTime == 0)
+                    if (CheckPos( peopleList, i, j))
                     {
-                        foreach(Person medborgare in PersonLista)
-                        {
-                            if (sak.Key.Contains(medborgare.Name))
-                            {
-                                medborgare.Inventory.Add(sak.Key,sak.Value);
-                                sak.Value.ReturnTime = sak.Value.Value;
-                                Events.Enqueue($"{medborgare.Name} fick tillbaka {sak.Value.Name} från {polis.Name}");
-                                polis.Inventory.Remove(sak.Key);
-                                return;
-                            }
-                        }
+                        ShowSymbol(peopleList, i, j);
+                    }
+                    else
+                    {
+                        Console.Write(' ');
                     }
                 }
             }
+            Console.Write(" ");
+            Console.WriteLine();
         }
     }
 
-    private static void DrawPrison(char[,] prison)
-    {
-        WriteAt("FÄNGELSE", 109, 14);
-        for (int i = 15; i < prison.GetLength(0) + 15; i++)
-        {
-            for (int j = 101; j < prison.GetLength(1) + 101; j++)
-            {
-                if (i == 15 || j == 101 || i == prison.GetLength(0) + 14 || j == prison.GetLength(1) + 100)
-                {
-                    WriteAt("X", j, i);
-                }
-            }
-        }
-        PrisonList();
-    }
+    //private static void PlaySpeed()
+    //{  
+    //    Thread.Sleep(Speed);
 
-    private static void PrisonList()
-    {
-        int i = 16;
-        foreach (Tjuv tjuv in Prison)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            WriteAt($"{tjuv.Name} - {tjuv.JailTime}", 103, i);
-            Console.ForegroundColor = ConsoleColor.White;
-            i++;
-        }
-    }
-
-    private static void DrawCity(char[,] city)
-    {
-        for (int i = 0; i < city.GetLength(0); i++)
-        {
-            for (int j = 0; j < city.GetLength(1); j++)
-            {
-                if (i == 0 || j == 0 || i == city.GetLength(0) - 1 || j == city.GetLength(1) - 1)
-                {
-                    WriteAt("X", j, i);
-                }
-                else
-                {
-                    ShowSymbol(i, j);
-                }
-            }
-        }
-    }
-
-    private static void PlaySpeed()
-    {
-        ConsoleKeyInfo keyInfo = Console.ReadKey(true);
-        if (keyInfo.Key == ConsoleKey.UpArrow)
-        {
-            if(Speed == 1)
-            { 
-                Speed = 100; 
-            }
-            else
-            { 
-                Speed += 100; 
-            }
-        }
-        if (keyInfo.Key == ConsoleKey.DownArrow && Speed > 0 && !(Speed == 1))
-        {
-            Speed -= 100;
-        }
-        /* ############# RAVE ############## */
-        Thread raveThread = null;  // Declare raveThread outside the if statement
-
-        if (keyInfo.Key == ConsoleKey.Spacebar)
-        {
-            if (RaveMode == false)
-            {
-                Console.Clear();
-                WriteAt("PHOTOSENSITIVITY WARNING", 50, 19);
-                WriteAt("This feature may potentially trigger seizures", 50, 20);
-                WriteAt("for people with photosensitive epilepsy.", 50, 21);
-                WriteAt("User Discretion is advised.", 50, 23);
-                WriteAt("Press enter to continue.", 50, 26);
-                Console.ReadLine();
-                Console.Clear();
-
-                RaveMode = true;
-                if (raveThread == null || !raveThread.IsAlive)  // Check if raveThread is already running
-                {
-                    raveThread = new Thread(new ThreadStart(Rave));
-                    raveThread.Start();
-                }
-            }
-            else
-            {
-                RaveMode = false;
-            }
-        }
-    }
+    //    ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+    //    if(keyInfo.Key == ConsoleKey.UpArrow)
+    //    {
+    //        Speed += 100;
+    //    }
+    //    if(keyInfo.Key == ConsoleKey.DownArrow && Speed > 0)
+    //    {
+    //        Speed -= 100;
+    //    }
+    //}
 
     private static void PrintEvent()
     {
-        int i = 0;
-        foreach (string happens in Events)
+        foreach (object happens in Events)
         {
-            if(happens.Contains("stal"))
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                WriteAt(happens, 101, i);
-                Console.ForegroundColor = ConsoleColor.White;
-            }
-            if(happens.Contains("arresterades"))
-            {
-                Console.ForegroundColor = ConsoleColor.Blue;
-                WriteAt(happens, 101, i);
-                Console.ForegroundColor = ConsoleColor.White;
-            }
-            if(happens.Contains("tillbaka"))
-            {
-                Console.ForegroundColor = ConsoleColor.Green;
-                WriteAt(happens, 101, i);
-                Console.ForegroundColor = ConsoleColor.White;
-            }
-            i++;
+            Console.WriteLine(happens);
         }
-        if (Events.Count > 10)
+        if (Events.Count > 5)
         {
             Events.Dequeue();
         }
@@ -301,9 +131,9 @@ internal class Program
         }
     }
 
-    private static void MovePerson()
+    private static void MovePerson(List<Person> personlista)
     {
-        foreach (Person person in PersonLista)
+        foreach (Person person in personlista)
         {
             switch (person.DirX)
             {
@@ -327,11 +157,11 @@ internal class Program
                     person.KordY--;
                     break;
             }
-            if (person.KordX <= 0)
+            if (person.KordX == 0)
             {
                 person.KordX = 98;
             }
-            if (person.KordY <= 0) 
+            if (person.KordY <= 1) 
             { 
                 person.KordY = 23; 
             }
@@ -339,40 +169,53 @@ internal class Program
             {
                 person.KordX = 1;
             }
-            if (person.KordY >= 24)
+            if(person.KordY >= 24)
             {
                 person.KordY = 1;
             }
         }
     }
 
-    private static void ShowSymbol(int i, int j)
+    private static void ShowSymbol(List<Person> personlista, int i, int j)
     {
-        foreach (Person person in PersonLista)
+        foreach (Person person in personlista)
         {
             if (person.KordY == i && person.KordX == j)
             {
-                if (person.symbol == "M")
+                if (person.symbol == 'M')
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
-                    WriteAt(person.symbol, j, i);
+                    Console.Write(person.symbol);
                     Console.ForegroundColor= ConsoleColor.White;
                 }
-                if (person.symbol == "P")
-                {  
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    WriteAt(person.symbol, j, i);
+                if (person.symbol == 'P')
+                {  Console.ForegroundColor = ConsoleColor.Blue; 
+                    Console.Write(person.symbol);
                     Console.ForegroundColor= ConsoleColor.White;
                 }
-                if (person.symbol == "T")
+                if (person.symbol == 'T')
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    WriteAt(person.symbol, j, i);
+                    Console.Write(person.symbol);
                     Console.ForegroundColor= ConsoleColor.White;
                 }
                 
             }
         }
+    }
+
+    private static bool CheckPos(List<Person> personlista, int i, int j)
+    {
+        bool isPos = false;
+
+        foreach (Person person in personlista)
+        {
+            if (person.KordY == i && person.KordX == j)
+            {
+                isPos = true;
+            }
+        }
+        return isPos;
     }
 
     public static void CheckMeetings()
@@ -385,19 +228,17 @@ internal class Program
             {
                 if (person1 is Tjuv && person2 is Medborgare && person1.KordX == person2.KordX && person1.KordY == person2.KordY)
                 {
-                    EventMarker(person1);
                     Tjuv tjuv = (Tjuv)person1;
                     Medborgare medborgare = (Medborgare)person2;
 
                     if (medborgare.Inventory.Count > 0)
                     {
-                        int randomIndex = rnd.Next(medborgare.Inventory.Count);
-                        KeyValuePair<string,Saker> randomItem = medborgare.Inventory.ElementAt(randomIndex);
+                        Saker stolenItem = medborgare.Inventory[rnd.Next(medborgare.Inventory.Count)];
 
-                        Events.Enqueue($"{tjuv.Name} stal {randomItem.Value.Name} från {medborgare.Name}");
+                        Events.Enqueue($"{tjuv.Name} stal {stolenItem.GetType().Name} från {medborgare.Name}");
 
-                        medborgare.Inventory.Remove(randomItem.Key);
-                        tjuv.Inventory.Add(randomItem.Key,randomItem.Value);
+                        medborgare.Inventory.Remove(stolenItem);
+                        tjuv.Inventory.Add(stolenItem);
                     }
                 }
 
@@ -408,17 +249,9 @@ internal class Program
 
                     if (tjuv.Inventory.Count > 0)
                     {
-                        EventMarker(person1);
                         tjuv.NumberOfConvicted++;
-                        foreach (KeyValuePair<string, Saker> item in tjuv.Inventory)
-                        {
-                            polis.Inventory.Add(item.Key, item.Value);
-                            tjuv.JailTime += item.Value.Value * tjuv.NumberOfConvicted;
-                            tjuv.Score += item.Value.Value;
-                        }
-                        AddHighscore(tjuv);
-                        
-                        tjuv.Score = 0;
+                        polis.Inventory.AddRange(tjuv.Inventory);
+                        tjuv.Inventory.ForEach(item => { tjuv.JailTime += item.value * tjuv.NumberOfConvicted; });
 
                         Events.Enqueue($"{tjuv.Name} arresterades av {polis.Name}");
 
@@ -434,24 +267,4 @@ internal class Program
         }
     }
 
-    private static void EventMarker(Person person1)
-    {
-        WriteAt("💀", person1.KordX,person1.KordY);
-    }
-
-    private static void AddHighscore(Tjuv tjuv)
-    {
-        if (!HighScore.ContainsKey(tjuv.Name))
-        {
-            HighScore.Add(tjuv.Name, tjuv.Score);
-        }
-        if (HighScore[tjuv.Name] < tjuv.Score)
-        {
-            HighScore[tjuv.Name] = tjuv.Score;
-        }
-        else
-        {
-            return;
-        }
-    }
 }

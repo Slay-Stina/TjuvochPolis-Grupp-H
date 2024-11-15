@@ -8,59 +8,48 @@ namespace TjuvochPolis_Grupp_H
 {
     internal class Saker
     {
-        public string Name { get; set; }
         public string Owner { get; set; }
-        public int Value {  get; set; }
-        public int ReturnTime {  get; set; }
+        public int value {  get; set; }
+
     }
 
     internal class MobilTelefon : Saker
     {
-        public MobilTelefon() : base()
+        public MobilTelefon()
         {
-            Name = "mobiltelefon";
-            Value = 7;
-            ReturnTime = Value;
+            value = 7;
         }
     }
 
-    internal class Plånbok : Saker
+    internal class plånbok : Saker
     {
-        public Plånbok() : base()
+        public plånbok()
         {
-            Name = "plånbok";
-            Value = 5;
-            ReturnTime = Value;
+            value = 5; 
         }
     }
 
-    internal class Babyoil : Saker 
+    internal class nycklar : Saker 
     {
-        public Babyoil() : base()
+        public nycklar()
         {
-            Name = "babyolja";
-            Value = 4;
-            ReturnTime = Value;
+            value = 4;
         }
     }
 
-    internal class Smycken : Saker 
+    internal class smycken : Saker 
     {
-        public Smycken() : base()
+        public smycken()
         {
-            Name = "smycken";
-            Value = 8;
-            ReturnTime = Value;
+            value = 8;
         }
     }
 
-    internal class Klocka : Saker 
+    internal class klocka : Saker 
     {
-        public Klocka() : base()
+        public klocka()
         {
-            Name = "klocka";
-            Value = 6;
-            ReturnTime = Value;
+            value = 6;
         }
     }
 }
