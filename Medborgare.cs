@@ -8,23 +8,10 @@ namespace TjuvochPolis_Grupp_H;
 
 internal class Medborgare : Person
 {
-    
-    
-    public Medborgare() 
+    public Medborgare()
     {
-
-        Inventory.Add(new MobilTelefon());
-        Inventory.Add(new plånbok());
-        Inventory.Add(new smycken());
-        Inventory.Add(new klocka());
-        Inventory.Add(new nycklar());
-        symbol = 'M';
-
-        
-
-        
+        symbol = "M";
     }
-
 
     private static List<string> medborgarNamn = File.ReadAllLines(@"..\..\..\medborgarNamn.txt").ToList();
     public static List<Medborgare> medborgarLista = SkapaMedborgare();
@@ -37,8 +24,13 @@ internal class Medborgare : Person
         {
             Medborgare nyMedborgare = new Medborgare();
             nyMedborgare.Name = name;
+            nyMedborgare.Inventory.Add($"{name}1", new MobilTelefon());
+            nyMedborgare.Inventory.Add($"{name}2", new Plånbok());
+            nyMedborgare.Inventory.Add($"{name}3", new Smycken());
+            nyMedborgare.Inventory.Add($"{name}4", new Klocka());
+            nyMedborgare.Inventory.Add($"{name}5", new Babyoil());
+
             medborgarList.Add(nyMedborgare);
-            
         }
         return medborgarList;
     }

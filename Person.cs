@@ -19,11 +19,11 @@ internal class Person
 
 
 
-    public char symbol { get; set; }
+    public string symbol { get; set; }
     public int DirX = rnd.Next(3);
     public int DirY = rnd.Next(3);
 
-    public List<Saker> Inventory = new List<Saker>();
+    public Dictionary<string,Saker> Inventory = new Dictionary<string,Saker>();
 
 }
 
